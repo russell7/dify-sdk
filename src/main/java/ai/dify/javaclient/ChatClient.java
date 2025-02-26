@@ -54,6 +54,31 @@ public class ChatClient extends DifyClient {
     }
 
     /**
+     * @see #createChatMessage(String, String, String, boolean, String)
+     */
+    public ChatMessageResponse createChatMessageSync(String inputs, String query, String user, String conversation_id) throws DifyClientException {
+        Response response = this.createChatMessage(inputs, query, user, false, conversation_id);
+        String body;
+        try {
+          assert response.body() != null;
+          body = response.body().string();
+        } catch (IOException e) {
+            DifyClientException ex = new DifyClientException(e.getMessage());
+            ex.initCause(e);
+            throw ex;
+        }
+        ChatMessageResponse chatMessageResponse = null;
+        try {
+            chatMessageResponse = mapper.readValue(body, ChatMessageResponse.class);
+        } catch (JsonProcessingException e) {
+            DifyClientException ex = new DifyClientException(e.getMessage());
+            ex.initCause(e);
+            throw ex;
+        }
+        return chatMessageResponse;
+    }
+
+    /**
      * Creates a new chat message.
      *
      * @param inputs         The chat message inputs.
