@@ -1,7 +1,7 @@
 package ai.dify.javaclient;
 
-import okhttp3.*;
-import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import okhttp3.Response;
 
 /**
  * This class represents a client for interacting with the Dify Completion API.
@@ -37,7 +37,7 @@ public class CompletionClient extends DifyClient {
      * @throws DifyClientException If an error occurs while sending the request.
      */
     public Response createCompletionMessage(String inputs, String query, String user, boolean stream) throws DifyClientException {
-        JSONObject json = new JSONObject();
+        ObjectNode json = mapper.createObjectNode();
         json.put("inputs", inputs);
         json.put("query", query);
         json.put("user", user);

@@ -1,8 +1,13 @@
 package ai.dify.javaclient;
 
-import com.alibaba.fastjson2.JSONObject;
+import ai.dify.javaclient.dto.ChatMessageResponse;
+import ai.dify.javaclient.helper.JsonUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +18,7 @@ import java.util.Map;
  * It provides methods for creating, retrieving, and managing chat messages and conversations.
  */
 public class ChatClient extends DifyClient {
+    ObjectMapper mapper = JsonUtil.buildMapper();
 
     /**
      * Constructs a new ChatClient with the provided API key.
@@ -59,7 +65,7 @@ public class ChatClient extends DifyClient {
      * @throws DifyClientException If an error occurs while sending the request.
      */
     public Response createChatMessage(String inputs, String query, String user, boolean stream, String conversation_id) throws DifyClientException {
-        JSONObject json = new JSONObject();
+        ObjectNode json = mapper.createObjectNode();
         json.put("inputs", inputs);
         json.put("query", query);
         json.put("user", user);
@@ -135,7 +141,7 @@ public class ChatClient extends DifyClient {
      * @throws DifyClientException If an error occurs while sending the request.
      */
     public Response renameConversation(String conversation_id, String name, String user) throws DifyClientException {
-        JSONObject json = new JSONObject();
+        ObjectNode  json = mapper.createObjectNode();
         json.put("name", name);
         json.put("user", user);
 
@@ -151,10 +157,9 @@ public class ChatClient extends DifyClient {
      * @throws DifyClientException If an error occurs while sending the request.
      */
     public Response deleteConversation(String conversation_id, String user) throws DifyClientException {
-        JSONObject json = new JSONObject();
+        ObjectNode  json = mapper.createObjectNode();
         json.put("user", user);
 
         return sendRequest(DELETE_CONVERSATION, new String[]{conversation_id}, createJsonPayload(json));
     }
 }
-

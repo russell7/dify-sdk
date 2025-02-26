@@ -1,16 +1,27 @@
 package ai.dify.javaclient;
 
 import ai.dify.javaclient.constants.DifyServerConstants;
+import ai.dify.javaclient.helper.JsonUtil;
 import ai.dify.javaclient.http.DifyRoute;
-import com.alibaba.fastjson2.JSONObject;
-import okhttp3.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import okhttp3.ConnectionPool;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 /**
  * This class serves as a client for interacting with the Dify API.
  * It provides methods for sending various types of requests to the API.
  */
 public class DifyClient {
+    ObjectMapper mapper = JsonUtil.buildMapper();
 
     // Constants representing different API routes
     public static final DifyRoute APPLICATION = new DifyRoute("GET", "/parameters?user=%s");
@@ -24,6 +35,9 @@ public class DifyClient {
 
     private String apiKey;
     private final String baseUrl;
+
+    private ConnectionPool connectionPool;
+
     private final OkHttpClient client;
 
     /**
@@ -44,7 +58,12 @@ public class DifyClient {
     public DifyClient(String apiKey, String baseUrl) {
         this.apiKey = apiKey;
         this.baseUrl = baseUrl;
-        this.client = new OkHttpClient();
+//         TODO 提供配置项
+        this.connectionPool = new ConnectionPool(5,10,TimeUnit.MINUTES);
+        this.client = new OkHttpClient.Builder()
+            .readTimeout(60, TimeUnit.SECONDS)
+            .connectionPool(connectionPool)
+            .build();
     }
 
     /**
@@ -100,7 +119,7 @@ public class DifyClient {
      * @throws DifyClientException If an error occurs while sending the request.
      */
     public Response messageFeedback(String messageId, String rating, String user) throws DifyClientException {
-        JSONObject json = new JSONObject();
+        ObjectNode  json = mapper.createObjectNode();
         json.put("rating", rating);
         json.put("user", user);
 
@@ -124,7 +143,12 @@ public class DifyClient {
      * @param jsonObject The JSON object to be used in the request body.
      * @return The created request body.
      */
-    RequestBody createJsonPayload(JSONObject jsonObject) {
-        return RequestBody.create(jsonObject.toJSONString(), MediaType.parse("application/json"));
+    RequestBody createJsonPayload(ObjectNode jsonObject) {
+        try {
+            return RequestBody.create(mapper.writeValueAsString(jsonObject),
+                MediaType.parse("application/json"));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
