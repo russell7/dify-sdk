@@ -3,15 +3,13 @@ This is the Java SDK for the Dify API, which allows you to seamlessly integrate 
 
 ## Installation
 
-Please ensure that you have included the necessary dependencies in your project, such as `fastjson2`, `okhttp3`, etc. You can use Maven, Gradle, or any other dependency management tool of your choice. The SDK itself can be included once it is published to a package repository.
-
 For the sake of this README, let's assume the SDK is available on Maven Central:
 
 ```xml
 <dependency>
     <groupId>ai.dify</groupId>
-    <artifactId>java-client</artifactId>
-    <version>1.0.0</version>
+    <artifactId>dify-sdk</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -26,9 +24,10 @@ import okhttp3.Response;
 
 public class DifyApp {
 
-    private static final String API_KEY = "your-api-key-here";
-
     public static void main(String[] args) {
+        String apiKey = System.getenv("AI_DIFY_API_KEY");
+        // skip if you don't need to customize the base URL
+        String baseUrl = System.getenv("AI_DIFY_BASE_URL");
         try {
             String user = "random-user-id";
             String inputs = "{\"name\":\"test name a\"}";
@@ -36,12 +35,12 @@ public class DifyApp {
             boolean responseMode = true;
 
             // Create a completion client
-            CompletionClient completionClient = new CompletionClient(API_KEY);
+            CompletionClient completionClient = new CompletionClient(apiKey, baseUrl);
             Response completionResponse = completionClient.createCompletionMessage(inputs, query, user, responseMode);
             System.out.println(completionResponse.body().string());
 
             // Create a chat client
-            ChatClient chatClient = new ChatClient(API_KEY);
+            ChatClient chatClient = new ChatClient(apiKey);
             // Create a chat message
             Response chatResponse = chatClient.createChatMessage(inputs, query, user, true, null);
             System.out.println(chatResponse.body().string());
@@ -55,7 +54,7 @@ public class DifyApp {
 
             // And so on for other methods...
 
-            DifyClient client = new DifyClient(API_KEY);
+            DifyClient client = new DifyClient(apiKey);
             // Fetch application parameters
             client.getApplicationParameters(user);
 
@@ -71,7 +70,7 @@ public class DifyApp {
 }
 ```
 
-Replace `'your-api-key-here'` with your actual Dify API key.
+Replace `'AI_DIFY_API_KEY'` with your actual Dify API key.
 
 ## License
 This SDK is released under the MIT License.
