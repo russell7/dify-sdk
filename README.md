@@ -1,9 +1,22 @@
 # Dify Java SDK
 This is the Java SDK for the Dify API, which allows you to seamlessly integrate Dify into your Java applications.
 
-## Installation
+## Deploy
 
-For the sake of this README, let's assume the SDK is available on Maven Central:
+put the following code in your settings.xml, chant repo.domain to your nexus server.
+see [guide large scale centralized deployments](https://maven.apache.org/guides/mini/guide-large-scale-centralized-deployments.html)
+```xml
+<properties>
+  <altReleaseDeploymentRepository>releases::default::http://repo.domain/repository/maven-releases/</altReleaseDeploymentRepository>
+  <altSnapshotDeploymentRepository>snapshots::default::http://repo.domain/repository/maven-snapshots/</altSnapshotDeploymentRepository>
+</properties>
+```
+```shell
+mvn clean deploy
+```
+
+## Usage
+Once the SDK is deployed/installed, you can use it in your project as follows:
 
 ```xml
 <dependency>
@@ -12,9 +25,6 @@ For the sake of this README, let's assume the SDK is available on Maven Central:
     <version>1.1.0-SNAPSHOT</version>
 </dependency>
 ```
-
-## Usage
-Once the SDK is installed, you can use it in your project as follows:
 
 ```java
 import ai.dify.javaclient.DifyClient;
