@@ -23,21 +23,72 @@ import java.util.concurrent.TimeUnit;
 public class DifyClient {
     ObjectMapper mapper = JsonUtil.buildMapper();
 
-    // Constants representing different API routes
+    /**
+     * API route for retrieving application parameters.
+     * <p>Endpoint: GET /parameters?user={user}</p>
+     */
     public static final DifyRoute APPLICATION = new DifyRoute("GET", "/parameters?user=%s");
+
+    /**
+     * API route for submitting message feedback.
+     * <p>Endpoint: POST /messages/{messageId}/feedbacks</p>
+     */
     public static final DifyRoute FEEDBACK = new DifyRoute("POST", "/messages/%s/feedbacks");
+
+    /**
+     * API route for creating completion messages.
+     * <p>Endpoint: POST /completion-messages</p>
+     */
     public static final DifyRoute CREATE_COMPLETION_MESSAGE = new DifyRoute("POST", "/completion-messages");
+
+    /**
+     * API route for creating chat messages.
+     * <p>Endpoint: POST /chat-messages</p>
+     */
     public static final DifyRoute CREATE_CHAT_MESSAGE = new DifyRoute("POST", "/chat-messages");
+
+    /**
+     * API route for retrieving conversation messages.
+     * <p>Endpoint: GET /messages?{queryParams}</p>
+     */
     public static final DifyRoute GET_CONVERSATION_MESSAGES = new DifyRoute("GET", "/messages?%s");
+
+    /**
+     * API route for retrieving conversations.
+     * <p>Endpoint: GET /conversations</p>
+     */
     public static final DifyRoute GET_CONVERSATIONS = new DifyRoute("GET", "/conversations");
+
+    /**
+     * API route for renaming a conversation.
+     * <p>Endpoint: PATCH /conversations/{conversationId}</p>
+     */
     public static final DifyRoute RENAME_CONVERSATION = new DifyRoute("PATCH", "/conversations/%s");
+
+    /**
+     * API route for deleting a conversation.
+     * <p>Endpoint: DELETE /conversations/{conversationId}</p>
+     */
     public static final DifyRoute DELETE_CONVERSATION = new DifyRoute("DELETE", "/conversations/%s");
 
+    /**
+     * API key for authentication with Dify services
+     */
     private String apiKey;
+
+    /**
+     * Base URL of the Dify API server
+     */
     private final String baseUrl;
 
+    /**
+     * HTTP connection pool for managing persistent connections
+     */
     private ConnectionPool connectionPool;
 
+    /**
+     * OkHttp client instance for executing HTTP requests
+     */
     private final OkHttpClient client;
 
     /**
@@ -58,7 +109,11 @@ public class DifyClient {
     public DifyClient(String apiKey, String baseUrl) {
         this.apiKey = apiKey;
         this.baseUrl = baseUrl;
-//         TODO 提供配置项
+        /**
+         * TODO: Provide configuration options for connection pool and timeout settings
+         * Default connection pool: max 5 idle connections, 10 minutes keep-alive
+         * Default read timeout: 60 seconds
+         */
         this.connectionPool = new ConnectionPool(5,10,TimeUnit.MINUTES);
         this.client = new OkHttpClient.Builder()
             .readTimeout(60, TimeUnit.SECONDS)
